@@ -147,7 +147,7 @@ class PongGame(Env):
 				self.ball.vel[0] = -self.ball.vel[0]
 				self.ball.vel[0] *= 1.1
 				self.ball.vel[1] *= 1.1
-				self.reward[0] += 
+				self.reward[0] += 1
 			elif int(self.ball.pos[0]) <= 0:
 				#if the ball hit ones wall, add score 1 to player 2 
 				self.scores[1] += 1
