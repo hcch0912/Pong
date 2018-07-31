@@ -86,20 +86,24 @@ class PongGame(Env):
 		acc1 = action[0]
 		acc2 = action[1]
 		# print(acc2)
+		# print(acc2)
 		if acc2 == "script":
 			w = abs(self.ball.pos[0] - self.paddle2.pos[0])
 			h = abs(self.ball.pos[1] - self.paddle2.pos[1])
 			time = w /self.ball.vel[0]
-			h_move = time * self.ball.vel[1]
-			# if h_move + (self.ball.pos[1] ) > HEIGHT : 
-			# 	acc2 = (HEIGHT - (h_move + (self.ball.pos[1] ) - HEIGHT)  -self.paddle2.pos[1])/time
-				
-			if h_move + (self.ball.pos[1] )  <= 0:	
-				acc2 =( abs(h_move + self.ball.pos[1] )  -self.paddle2.pos[1] ) /time
-				# print(acc2)
-			else:
-				acc2 = ((self.ball.pos[1] + h_move) - self.paddle2.pos[1]) /time  	
-				# print(acc2)
+			if time == 0 or time == 0.0:
+				acc2 = 0
+			elif	
+				h_move = time * self.ball.vel[1]
+				# if h_move + (self.ball.pos[1] ) > HEIGHT : 
+				# 	acc2 = (HEIGHT - (h_move + (self.ball.pos[1] ) - HEIGHT)  -self.paddle2.pos[1])/time
+					
+				if h_move + (self.ball.pos[1] )  <= 0:	
+					acc2 =( abs(h_move + self.ball.pos[1] )  -self.paddle2.pos[1] ) /time
+					# print(acc2)
+				else:
+					acc2 = ((self.ball.pos[1] + h_move) - self.paddle2.pos[1]) /time  	
+					# print(acc2)
 		else:	
 			pass
 		# print(acc1, acc2)	
@@ -143,13 +147,13 @@ class PongGame(Env):
 				self.ball.vel[0] = -self.ball.vel[0]
 				self.ball.vel[0] *= 1.1
 				self.ball.vel[1] *= 1.1
-				self.reward[0] += 5
+				self.reward[0] += 
 			elif int(self.ball.pos[0]) <= 0:
 				#if the ball hit ones wall, add score 1 to player 2 
 				self.scores[1] += 1
 				self.goals[0] = True
-				self.reward[1] = 2
-				self.reward[0] = -5
+				self.reward[1] = 1
+				self.reward[0] = -1
 			
 
 			
@@ -158,14 +162,14 @@ class PongGame(Env):
 				self.ball.vel[0] = -self.ball.vel[0]
 				self.ball.vel[0] *= 1.1
 				self.ball.vel[1] *= 1.1
-				self.reward[1] +=5
+				self.reward[1] +=1
 			elif int(self.ball.pos[0]) >= WIDTH:
 				# self.is_finished = True
 				# add score 1 to player 1
 				self.scores[0] +=1 
 				self.goals[1] = True
-				self.reward[0] = 2
-				self.reward[1] = -5
+				self.reward[0] = 1
+				self.reward[1] = -1
 				
 
 		# self.reward  [self.scores[0]- self.scores[1], self.scores[1] - self.scores[0]]	
