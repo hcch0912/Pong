@@ -7,7 +7,6 @@ import common.tf_util as U
 from common.distributions import make_pdtype
 from common.replay_buffer import ReplayBuffer
 
-
 def discount_with_dones(rewards, dones, gamma):
     discounted = []
     r = 0
@@ -60,23 +59,26 @@ class DDPGLearner():
             act_pdtype = make_pdtype(act_space)
 
             # act_ph = act_pdtype.sample_placeholder([None], name= "action")
-            act_ph = tf.placeholder(tf.float32, shape = (None, 2))
+            act_ph = tf.placeholder(tf.float32, shape = (None, 1))
             if args.game == "RoboschoolPong-v1":
                 obs_ph = tf.placeholder(tf.float32, shape = (None, input_space.shape[0]))
             elif args.game == "Pong-2p-v0":
                 obs_ph = tf.placeholder(tf.float32, shape = (None, input_space.shape[0], input_space.shape[1], input_space.shape[2]))    
             q_target = tf.placeholder(tf.float32, shape =( None,))
 
-            p_input = obs_ph
-            p = mlp_model(p_input, act_pdtype.param_shape()[0] , scope = "p_func")
+            #build the world representation z
+            z = conv_model(obs_ph, 20, scope = "world_model")
+            p_input = z
+
+            p = mlp_model(p_input, 2, scope = "p_func")
             p_func_vars = U.scope_vars(U.absolute_scope_name("p_func"))
 
             act_pd = act_pdtype.pdfromflat(p)
             act_sample = act_pd.sample()
 
             p_reg = tf.reduce_mean(tf.square(act_pd.flatparam()))
-
-            q_input = tf.concat([obs_ph , act_sample], -1)
+           
+            q_input = tf.concat([z , act_sample], -1)
             q = mlp_model(q_input, 1, scope = "q_func")
             q_func_vars = U.scope_vars(U.absolute_scope_name("q_func"))
             pg_loss = -tf.reduce_mean(q)
@@ -92,7 +94,7 @@ class DDPGLearner():
             p_values = U.function([obs_ph], p)
 
 
-            target_p = mlp_model(p_input, act_pdtype.param_shape()[0], scope = "target_p_func")
+            target_p = mlp_model(z, 2, scope = "target_p_func")
             target_p_func_vars = U.scope_vars(U.absolute_scope_name("target_p_func"))
 
             target_q = mlp_model(q_input, 1 , scope = "target_q_func")
@@ -117,7 +119,7 @@ class DDPGLearner():
 
     def learn(self, batch_size, gamma):
         if len(self.replay_buffer) < self.max_replay_buffer_len: # replay buffer is not large enough
-            return
+            return 0,0
         self.replay_sample_index = self.replay_buffer.make_index(batch_size)
         # collect replay sample from all agents
         obs, act, rew, obs_next, done = self.replay_buffer.sample_index(self.replay_sample_index )
@@ -133,4 +135,6 @@ class DDPGLearner():
 
         self.update_target_p() 
         self.update_target_q()
-        return [q_loss, p_loss]    
+        return q_loss, p_loss  
+    def reset_replay_buffer(self):
+        self.replay_buffer = ReplayBuffer(1e6)     
