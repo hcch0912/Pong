@@ -91,9 +91,9 @@ if __name__ == '__main__':
                 agent1_score.append(ep_score[0])
                 agent2_score.append(ep_score[1])
                 q_loss1, p_loss1 = agent1.learn(arglist.batch_size, arglist.gamma)
+                q_loss2, p_loss2  = 0,0      
                 if arglist.adv_agent == "agent":
                     q_loss2, p_loss2 = agent2.learn(arglist.batch_size, arglist.gamma)  
-                q_loss2, p_loss2  = 0,0      
                 agent1_q_loss.append(q_loss1)
                 agent1_p_loss.append(p_loss1)
                 agent2_q_loss.append(q_loss2)

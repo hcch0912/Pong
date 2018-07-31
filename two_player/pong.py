@@ -93,7 +93,7 @@ class PongGame(Env):
 			time = w /self.ball.vel[0]
 			if time == 0 or time == 0.0:
 				acc2 = 0
-			elif	
+			else:	
 				h_move = time * self.ball.vel[1]
 				# if h_move + (self.ball.pos[1] ) > HEIGHT : 
 				# 	acc2 = (HEIGHT - (h_move + (self.ball.pos[1] ) - HEIGHT)  -self.paddle2.pos[1])/time
